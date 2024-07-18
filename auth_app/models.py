@@ -15,7 +15,7 @@ class CustomUser(AbstractUser):
 
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
 
-class Event(models.Model):
+class Events(models.Model):
     image = CloudinaryField("image",null=True)
     title = models.CharField(max_length=100)
     category = models.CharField(max_length=100)
@@ -23,10 +23,44 @@ class Event(models.Model):
     description = models.TextField()
     startDate = models.DateField()
     endDate = models.DateField()
+    duration = models.CharField(max_length=10, null=True)
+    time = models.CharField(max_length=10, null=True)
+    tickets = models.IntegerField(null=True)
+    price_of_ticket = models.IntegerField(null=True)
 
     def __str__(self):
         return self.title
 
+
+class Tickets(models.Model):
+    title = models.CharField(max_length=100)
+    category = models.CharField(max_length=100)
+    duration = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100)
+    number_of_tickets = models.IntegerField()
+    
+    def __str__(self):
+        return f"{self.name} - {self.title}"
+    
+class Contacts(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100)
+    message = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+class Vendors(models.Model):
+    image = CloudinaryField("image",null=True)
+    Comapany_name = models.CharField(max_length=100)
+    service = models.CharField(max_length=100)
+    working_hours = models.CharField(max_length=100)
+    rates = models.CharField(max_length=100)
+    availability = models.CharField(max_length=100)
+    contact = models.IntegerField()
+
+    def __str__(self):
+        return self.Comapany_name
 
 
 

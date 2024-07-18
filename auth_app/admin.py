@@ -1,6 +1,7 @@
 from django.contrib import admin
-from auth_app.models import CustomUser, Event
+from auth_app.models import *
 
 # Register your models here.
 admin.site.register(CustomUser)
-admin.site.register(Event)
+admin.site.register(Events)
+admin.site.register(Vendors)

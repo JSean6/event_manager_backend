@@ -1,7 +1,22 @@
+from django.forms import ValidationError
 from rest_framework import serializers
 from .models import CustomUser
 from django.contrib.auth.forms import PasswordResetForm
-from .models import Event
+from .models import *
+from django.contrib.auth import get_user_model, authenticate
+
+UserModel = get_user_model
+
+class UserRegisterSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = UserModel
+		fields = '__all__'
+        
+	def create(self, clean_data):
+		user_obj = UserModel.objects.create_user(email=clean_data['email'], password=clean_data['password'])
+		user_obj.username = clean_data['username']
+		user_obj.save()
+		return user_obj
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -30,31 +45,34 @@ class CustomUserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class LoginSerializer(serializers.Serializer):
+
+class UserLoginSerializer(serializers.Serializer):
+
+    class Meta:
+        model = CustomUser
+        fields = '__all__'
+
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
     
     def validate(self, data):
-        email = data.get("email", "")
-        password = data.get("password", "")
+        email = data.get('email')
+        password = data.get('password')
+        UserModel = get_user_model()
+        try:
+            user = UserModel.objects.get(email=email)
+        except UserModel.DoesNotExist:
+            raise serializers.ValidationError('Invalid login credentials')
         
-        if email and password:
-            try:
-                user = CustomUser.objects.get(email=email)
-            except CustomUser.DoesNotExist:
-                raise serializers.ValidationError("Invalid email or password.")
-            
-            if user.check_password(password):
-                if user.is_active:
-                    data["user"] = user
-                else:
-                    raise serializers.ValidationError("User is deactivated.")
-            else:
-                raise serializers.ValidationError("Invalid email or password.")
-        else:
-            raise serializers.ValidationError("Must provide email and password both.")
-        return data
-    
+        if not user.check_password(password):
+            raise serializers.ValidationError('Invalid login credentials')
+        
+        return user
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model: CustomUser
+        fields = '__all__'
     
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -75,8 +93,24 @@ class PasswordResetSerializer(serializers.Serializer):
 
 # events/serializers.py
 
-class EventSerializer(serializers.ModelSerializer):
+class EventsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Event
+        model = Events
+        fields = '__all__'
+
+class TicketsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tickets
+        fields = '__all__'
+
+class VendorsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Vendors
+        fields = '__all__'
+class ContactsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Contacts
         fields = '__all__'
 

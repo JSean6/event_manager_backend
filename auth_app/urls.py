@@ -1,15 +1,21 @@
 from django.urls import path, include
-import auth_app
 from auth_app.views import *
-
+from . import views
+from django.urls import path
+from .views import csrf_token
 
 urlpatterns = [
     path('api/users/', UserListCreateView.as_view(), name='user-list-create'),
     path('token/', ObtainTokenPairWithRoleView.as_view(), name='token_obtain_pair'),
     path('admin-only/', AdminOnlyView.as_view(), name='admin-only'),
     path('staff-only/', StaffOnlyView.as_view(), name='staff-only'),
-    path('api/login/', ObtainTokenPairWithRoleView.as_view(), name='token_obtain_pair'),
+    path('api/login/', views.UserLogin.as_view(), name='user-login'),
+    path('api/logout/', views.UserLogout.as_view(), name='user-logout'),
     path('api/reset-password/', PasswordResetRequestView.as_view(), name='password_reset'),
     path('reset/<uidb64>/<token>/', password_reset_confirm, name='password_reset_confirm'),
-    path('api/events/', EventListCreateView.as_view(), name='event-list-create'),
+    path('api/events/', EventsListCreateView.as_view(), name='event-list-create'),
+    path('api/tickets/', TicketsListCreateView.as_view(), name='ticket-list-create'),
+    path('api/vendors/', VendorsListCreateView.as_view(), name='vendors-list-create'),
+    path('api/contacts/', ContactsListCreateView.as_view(), name='contacts-list-create'),
+    path('api/csrf-token/', csrf_token, name='csrf-token'),
 ]
