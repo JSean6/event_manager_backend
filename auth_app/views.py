@@ -36,7 +36,7 @@ def csrf_token(request):
     return JsonResponse({'csrfToken': get_token(request)})
 
 User = get_user_model()
-class UserRegister(APIView):
+class UserRegister(APIView): 
     permission_classes = (permissions.AllowAny,)
     
     def post(self, request):
@@ -50,6 +50,11 @@ class UserRegister(APIView):
                     "message": "User registered successfully."
                 }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    lookup_field = 'id'        
 
 class UserLogin(generics.ListCreateAPIView):
     queryset = CustomUser.objects.all()
@@ -96,7 +101,7 @@ class StaffOnlyView(generics.ListCreateAPIView):
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_permissions(self):
         if self.request.method == 'POST':
@@ -155,17 +160,36 @@ class EventsListCreateView(generics.ListCreateAPIView):
     serializer_class = EventsSerializer
     permission_classes = [AllowAny]
 
+class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Events.objects.all()
+    serializer_class = EventsSerializer
+    lookup_field = 'id'
+    
 class TicketsListCreateView(generics.ListCreateAPIView):
     queryset = Tickets.objects.all()
     serializer_class = TicketsSerializer
     permission_classes = [AllowAny]
 
+class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Tickets.objects.all()
+    serializer_class = TicketsSerializer
+    lookup_field = 'id'
 class VendorsListCreateView(generics.ListCreateAPIView):
     queryset = Vendors.objects.all()
     serializer_class = VendorsSerializer
     permission_classes = [AllowAny]
+
+class VendorDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Vendors.objects.all()
+    serializer_class = VendorsSerializer
+    lookup_field = 'id'
     
 class ContactsListCreateView(generics.ListCreateAPIView):
     queryset = Contacts.objects.all()
     serializer_class = ContactsSerializer
     permission_classes = [AllowAny]
+
+class ContactDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Contacts.objects.all()
+    serializer_class = ContactsSerializer
+    lookup_field = 'id'

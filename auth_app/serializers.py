@@ -18,7 +18,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 		user_obj.save()
 		return user_obj
 
-
 class CustomUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -44,7 +43,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
             instance.set_password(validated_data['password'])
         instance.save()
         return instance
-
 
 class UserLoginSerializer(serializers.Serializer):
 
@@ -90,9 +88,6 @@ class PasswordResetSerializer(serializers.Serializer):
             email_template_name='registration/password_reset_email.html',
             request=request,
         )
-
-# events/serializers.py
-
 class EventsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Events

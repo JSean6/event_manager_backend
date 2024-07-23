@@ -23,7 +23,7 @@ class Events(models.Model):
     description = models.TextField()
     startDate = models.DateField()
     endDate = models.DateField()
-    duration = models.CharField(max_length=10, null=True)
+    duration = models.CharField(max_length=100, null=True)
     time = models.CharField(max_length=10, null=True)
     tickets = models.IntegerField(null=True)
     price_of_ticket = models.IntegerField(null=True)
@@ -50,6 +50,7 @@ class Contacts(models.Model):
 
     def __str__(self):
         return self.name
+    
 class Vendors(models.Model):
     image = CloudinaryField("image",null=True)
     Comapany_name = models.CharField(max_length=100)
