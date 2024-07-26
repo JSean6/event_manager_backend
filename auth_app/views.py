@@ -2,42 +2,35 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import permissions, status
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import status
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth import get_user_model
-
-from .models import *
-from .serializers import *
 from django.contrib.auth.tokens import default_token_generator
-
-from rest_framework import generics
-from .models import CustomUser
-from .serializers import CustomUserSerializer
-from .permissions import IsAdminUser, IsStaffUser
+from django.contrib.auth.forms import SetPasswordForm
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import SetPasswordForm
-
-
-from django.contrib.auth import get_user_model, login, logout
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .serializers import UserRegisterSerializer, UserLoginSerializer
-from rest_framework import permissions, status
-from .validations import *
-from django.http import JsonResponse
+from django.contrib.auth import logout
 from django.middleware.csrf import get_token
+from django.http import JsonResponse
+from rest_framework import status
+
+
+from .models import CustomUser, Events, Tickets, Vendors, Contacts
+from .serializers import (
+    CustomUserSerializer, UserRegisterSerializer, UserLoginSerializer, 
+    EventsSerializer, TicketsSerializer, VendorsSerializer, ContactsSerializer, PasswordResetSerializer
+)
+from .permissions import IsAdminUser, IsStaffUser
+from .validations import custom_validation
+
+User = get_user_model()
 
 def csrf_token(request):
     return JsonResponse({'csrfToken': get_token(request)})
 
-User = get_user_model()
-class UserRegister(APIView): 
-    permission_classes = (permissions.AllowAny,)
+class UserRegister(APIView):
+    permission_classes = (AllowAny,)
     
     def post(self, request):
         clean_data = custom_validation(request.data)
@@ -54,7 +47,8 @@ class UserRegister(APIView):
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    lookup_field = 'id'        
+    lookup_field = 'id'
+    permission_classes = [IsAuthenticated]
 
 class UserLogin(generics.ListCreateAPIView):
     queryset = CustomUser.objects.all()
@@ -65,8 +59,12 @@ class UserLogin(generics.ListCreateAPIView):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data
-            # You can return a token or any other response here
-            return Response({"detail": "Successfully logged in"}, status=status.HTTP_200_OK)
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+                "role": user.role
+            }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get(self, request):
@@ -78,13 +76,11 @@ class UserLogout(APIView):
         logout(request)
         return Response({"detail": "Successfully logged out"}, status=status.HTTP_200_OK)
 
-
 class UserView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    authentication_classes = (SessionAuthentication)
-    ##
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        serializer = UserSerializer(request.user)
+        serializer = CustomUserSerializer(request.user)
         return Response({'user': serializer.data}, status=status.HTTP_200_OK)
 
 class AdminOnlyView(generics.ListCreateAPIView):
@@ -97,7 +93,6 @@ class StaffOnlyView(generics.ListCreateAPIView):
     serializer_class = CustomUserSerializer
     permission_classes = [IsStaffUser]
 
-
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
@@ -109,7 +104,7 @@ class UserListCreateView(generics.ListCreateAPIView):
         return super().get_permissions()
 
 class ObtainTokenPairWithRoleView(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         serializer = UserLoginSerializer(data=request.data)
@@ -154,7 +149,6 @@ def password_reset_confirm(request, uidb64, token):
         messages.error(request, 'The password reset link is invalid or has expired.')
         return redirect('password_reset')  
 
-
 class EventsListCreateView(generics.ListCreateAPIView):
     queryset = Events.objects.all()
     serializer_class = EventsSerializer
@@ -164,7 +158,8 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Events.objects.all()
     serializer_class = EventsSerializer
     lookup_field = 'id'
-    
+    permission_classes = [IsAuthenticated]
+
 class TicketsListCreateView(generics.ListCreateAPIView):
     queryset = Tickets.objects.all()
     serializer_class = TicketsSerializer
@@ -174,6 +169,8 @@ class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tickets.objects.all()
     serializer_class = TicketsSerializer
     lookup_field = 'id'
+    permission_classes = [IsAuthenticated]
+
 class VendorsListCreateView(generics.ListCreateAPIView):
     queryset = Vendors.objects.all()
     serializer_class = VendorsSerializer
@@ -183,7 +180,8 @@ class VendorDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Vendors.objects.all()
     serializer_class = VendorsSerializer
     lookup_field = 'id'
-    
+    permission_classes = [IsAuthenticated]
+
 class ContactsListCreateView(generics.ListCreateAPIView):
     queryset = Contacts.objects.all()
     serializer_class = ContactsSerializer
@@ -193,3 +191,4 @@ class ContactDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Contacts.objects.all()
     serializer_class = ContactsSerializer
     lookup_field = 'id'
+    permission_classes = [IsAuthenticated]
