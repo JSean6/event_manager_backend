@@ -16,6 +16,7 @@ from datetime import timedelta
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--q83bafy!e3!lj=yzz-j_3%!)i5w5cg)v^ghu__s-j+7oznqk@'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -95,17 +96,20 @@ WSGI_APPLICATION = 'events.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'events',
-        'USER': 'postgres',
-        'PASSWORD': 'sean2366',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'events',
+#         'USER': 'postgres',
+#         'PASSWORD': 'sean2366',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
+DATABASES = {
+    "default": dj_database_url.parse(config("DATABASE_URL"))
+}
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -203,3 +207,4 @@ cloudinary.config(
     api_key = '645835154153584',
     api_secret = '6WKHfd2HzpYZFW9QRrtr7bBFJOM'
 )
+
