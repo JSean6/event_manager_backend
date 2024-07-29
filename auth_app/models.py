@@ -24,7 +24,7 @@ class Events(models.Model):
     startDate = models.DateField()
     endDate = models.DateField()
     duration = models.CharField(max_length=100, null=True)
-    time = models.CharField(max_length=10, null=True)
+    time = models.CharField(max_length=100, null=True)
     tickets = models.IntegerField(null=True)
     price_of_ticket = models.IntegerField(null=True)
 
