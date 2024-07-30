@@ -24,6 +24,14 @@ from .serializers import (
 from .permissions import IsAdminUser, IsStaffUser
 from .validations import custom_validation
 
+from rest_framework import generics, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import TicketTransaction
+from .serializers import TicketTransactionSerializer
+from django.core.mail import send_mail
+from django.conf import settings
+
 User = get_user_model()
 
 def csrf_token(request):
@@ -192,3 +200,34 @@ class ContactDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ContactsSerializer
     lookup_field = 'id'
     permission_classes = [IsAuthenticated]
+
+class SaveTransactionView(generics.ListCreateAPIView):
+    queryset = TicketTransaction.objects.all()
+    serializer_class = TicketTransactionSerializer
+
+class SendReceiptView(APIView):
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        receipt = request.data.get('receipt')
+        
+        if not email or not receipt:
+            return Response({'error': 'Email and receipt are required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        subject = "Your Ticket Receipt"
+        message = f"""
+        Event Title: {receipt.get('title')}
+        Category: {receipt.get('category')}
+        Venue: {receipt.get('venue')}
+        Duration: {receipt.get('duration')}
+        Name: {receipt.get('name')}
+        Email: {receipt.get('email')}
+        Number of Tickets: {receipt.get('number_of_tickets')}
+        Total Price: Ksh.{receipt.get('totalPrice')}
+        Date: {receipt.get('date')}
+        """
+        
+        try:
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+            return Response({'success': 'Email sent successfully.'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

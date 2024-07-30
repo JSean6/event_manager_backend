@@ -109,3 +109,8 @@ class ContactsSerializer(serializers.ModelSerializer):
         model = Contacts
         fields = '__all__'
 
+class TicketTransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TicketTransaction
+        fields = '__all__'
+

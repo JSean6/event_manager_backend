@@ -22,4 +22,6 @@ urlpatterns = [
     path('api/contacts/', ContactsListCreateView.as_view(), name='contacts-list-create'),
     path('api/contacts/<int:id>/', ContactDetailView.as_view(), name='contacts-detail'),  
     path('api/csrf-token/', csrf_token, name='csrf-token'),
+    path('save-transaction/', SaveTransactionView.as_view(), name='save-transaction'),
+    path('send-receipt/', SendReceiptView.as_view(), name='send-receipt'),
 ]
