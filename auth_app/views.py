@@ -205,7 +205,7 @@ class SaveTransactionView(generics.ListCreateAPIView):
     queryset = TicketTransaction.objects.all()
     serializer_class = TicketTransactionSerializer
 
-class SendReceiptView(generics.ListCreateAPIView):
+class SendReceiptView(APIView):
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         receipt = request.data.get('receipt')
