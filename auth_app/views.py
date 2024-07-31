@@ -168,6 +168,16 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
     permission_classes = [IsAuthenticated]
 
+    def delete_event(request, event_id):
+        if request.method == 'DELETE':
+            try:
+                event = Events.objects.get(id=event_id)
+                event.delete()
+                return JsonResponse({'message': 'Event deleted successfully'}, status=200)
+            except Events.DoesNotExist:
+                return JsonResponse({'error': 'Event not found'}, status=404)
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+
 class TicketsListCreateView(generics.ListCreateAPIView):
     queryset = Tickets.objects.all()
     serializer_class = TicketsSerializer

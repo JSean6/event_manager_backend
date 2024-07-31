@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'cloudinary',
-    "corsheaders",
+    'corsheaders',
     'auth_app',
     'rest_framework_simplejwt',
 ]
@@ -53,7 +53,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    "corsheaders.middleware.CorsMiddleware",   
+    'corsheaders.middleware.CorsMiddleware',   
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -64,6 +64,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'events.urls'
 
@@ -215,3 +217,12 @@ cloudinary.config(
 
 MAILGUN_API_KEY = '9c83682078dfee46180f37209a60127b-afce6020-470e3a6d'
 MAILGUN_DOMAIN = 'sandbox54c8d33122064107a060a72e600a76a2.mailgun.org'
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",  # React development server
+    "http://127.0.0.1:3000",
+    ...
+]
+
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_HEADER_NAME = "X-CSRFToken"
