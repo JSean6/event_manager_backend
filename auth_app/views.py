@@ -205,29 +205,42 @@ class SaveTransactionView(generics.ListCreateAPIView):
     queryset = TicketTransaction.objects.all()
     serializer_class = TicketTransactionSerializer
 
-class SendReceiptView(APIView):
-    def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        receipt = request.data.get('receipt')
+# views.py
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+from .utils import send_ticket_email
+
+@csrf_exempt
+def send_receipt_email(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        email = data.get('email')
+        receipt = data.get('receipt')
         
         if not email or not receipt:
-            return Response({'error': 'Email and receipt are required.'}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({'error': 'Email and receipt data are required'}, status=400)
         
-        subject = "Your Ticket Receipt"
-        message = f"""
-        Event Title: {receipt.get('title')}
-        Category: {receipt.get('category')}
-        Venue: {receipt.get('venue')}
-        Duration: {receipt.get('duration')}
-        Name: {receipt.get('name')}
-        Email: {receipt.get('email')}
-        Number of Tickets: {receipt.get('number_of_tickets')}
-        Total Price: Ksh.{receipt.get('totalPrice')}
-        Date: {receipt.get('date')}
+        subject = "Your Ticket Purchase Receipt"
+        content = f"""
+        <h1>Thank you for your purchase!</h1>
+        <p>Here are your ticket details:</p>
+        <p>Event Title: {receipt['title']}</p>
+        <p>Category: {receipt['category']}</p>
+        <p>Venue: {receipt['venue']}</p>
+        <p>Duration: {receipt['duration']}</p>
+        <p>Name: {receipt['name']}</p>
+        <p>Email: {receipt['email']}</p>
+        <p>Number of Tickets: {receipt['number_of_tickets']}</p>
+        <p>Total Price: Ksh.{receipt['totalPrice']}</p>
+        <p>Date: {receipt['date']}</p>
         """
         
-        try:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
-            return Response({'success': 'Email sent successfully.'}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        response = send_ticket_email(email, subject, content)
+        if response.status_code == 200:
+            return JsonResponse({'status': 'Email sent'})
+        else:
+            return JsonResponse({'error': 'Failed to send email'}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)

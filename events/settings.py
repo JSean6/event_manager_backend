@@ -209,3 +209,6 @@ cloudinary.config(
     api_secret = '6WKHfd2HzpYZFW9QRrtr7bBFJOM'
 )
 
+MAILGUN_API_KEY = config('MAILGUN_API_KEY')
+MAILGUN_DOMAIN = config('MAILGUN_DOMAIN')
+
