@@ -205,12 +205,11 @@ class SaveTransactionView(generics.ListCreateAPIView):
     queryset = TicketTransaction.objects.all()
     serializer_class = TicketTransactionSerializer
 
-# views.py
-
-from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail
+from django.core.mail import send_mail
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 import json
-from .utils import send_ticket_email
 
 @csrf_exempt
 def send_receipt_email(request):
@@ -219,28 +218,20 @@ def send_receipt_email(request):
         email = data.get('email')
         receipt = data.get('receipt')
         
-        if not email or not receipt:
-            return JsonResponse({'error': 'Email and receipt data are required'}, status=400)
-        
-        subject = "Your Ticket Purchase Receipt"
-        content = f"""
-        <h1>Thank you for your purchase!</h1>
-        <p>Here are your ticket details:</p>
-        <p>Event Title: {receipt['title']}</p>
-        <p>Category: {receipt['category']}</p>
-        <p>Venue: {receipt['venue']}</p>
-        <p>Duration: {receipt['duration']}</p>
-        <p>Name: {receipt['name']}</p>
-        <p>Email: {receipt['email']}</p>
-        <p>Number of Tickets: {receipt['number_of_tickets']}</p>
-        <p>Total Price: Ksh.{receipt['totalPrice']}</p>
-        <p>Date: {receipt['date']}</p>
-        """
-        
-        response = send_ticket_email(email, subject, content)
-        if response.status_code == 200:
-            return JsonResponse({'status': 'Email sent'})
-        else:
-            return JsonResponse({'error': 'Failed to send email'}, status=500)
-    
-    return JsonResponse({'error': 'Invalid request method'}, status=405)
+        subject = 'Your Ticket Purchase Receipt'
+        message = (
+            f"Event Title: {receipt['title']}\n"
+            f"Category: {receipt['category']}\n"
+            f"Venue: {receipt['venue']}\n"
+            f"Duration: {receipt['duration']}\n"
+            f"Name: {receipt['name']}\n"
+            f"Email: {receipt['email']}\n"
+            f"Number of Tickets: {receipt['number_of_tickets']}\n"
+            f"Total Price: Ksh.{receipt['totalPrice']}\n"
+            f"Date: {receipt['date']}\n"
+        )
+        send_mail(subject, message, 'seannjoroge54@gmail.com', [email])
+
+        return JsonResponse({'status': 'success', 'message': 'Email sent successfully'})
+    return JsonResponse({'status': 'fail', 'message': 'Invalid request method'})
+
