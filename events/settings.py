@@ -63,6 +63,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://res.cloudinary.com/da1fegzlm/"
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
