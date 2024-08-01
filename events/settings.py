@@ -63,7 +63,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://res.cloudinary.com/da1fegzlm/"
+    "https://res.cloudinary.com/da1fegzlm/",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -222,6 +222,7 @@ MAILGUN_DOMAIN = 'sandbox54c8d33122064107a060a72e600a76a2.mailgun.org'
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",  # React development server
     "http://127.0.0.1:3000",
+    "https://res.cloudinary.com/da1fegzlm/",
     ...
 ]
 
