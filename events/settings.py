@@ -63,7 +63,6 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://res.cloudinary.com/da1fegzlm/",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -99,20 +98,20 @@ WSGI_APPLICATION = 'events.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'events',
-#         'USER': 'postgres',
-#         'PASSWORD': 'sean2366',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
-
 DATABASES = {
-    "default": dj_database_url.parse(config("DATABASE_URL"))
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'events',
+        'USER': 'postgres',
+        'PASSWORD': 'sean2366',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
 }
+
+# DATABASES = {
+#     "default": dj_database_url.parse(config("DATABASE_URL"))
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -223,7 +222,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",  # React development server
     "http://127.0.0.1:3000",
     "https://res.cloudinary.com/da1fegzlm/",
-    ...
 ]
 
 CSRF_COOKIE_NAME = "csrftoken"

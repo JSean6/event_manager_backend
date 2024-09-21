@@ -43,16 +43,11 @@ class CustomUserSerializer(serializers.ModelSerializer):
             instance.set_password(validated_data['password'])
         instance.save()
         return instance
-
+    
 class UserLoginSerializer(serializers.Serializer):
-
-    class Meta:
-        model = CustomUser
-        fields = '__all__'
-
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
-    
+
     def validate(self, data):
         email = data.get('email')
         password = data.get('password')

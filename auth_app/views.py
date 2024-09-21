@@ -58,13 +58,12 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
     permission_classes = [IsAuthenticated]
 
-class UserLogin(generics.ListCreateAPIView):
-    queryset = CustomUser.objects.all()
+class UserLogin(generics.GenericAPIView):
     serializer_class = UserLoginSerializer
     permission_classes = [AllowAny]
-    
+
     def post(self, request):
-        serializer = UserLoginSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data
             refresh = RefreshToken.for_user(user)
@@ -76,8 +75,7 @@ class UserLogin(generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get(self, request):
-        serializer = UserLoginSerializer(request.user)
-        return Response({'user': serializer.data}, status=status.HTTP_200_OK)
+        return Response({"detail": "Method 'GET' not allowed."}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 class UserLogout(APIView):
     def post(self, request, *args, **kwargs):
