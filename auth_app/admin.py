@@ -3,5 +3,5 @@ from auth_app.models import *
 
 # Register your models here.
 admin.site.register(CustomUser)
-admin.site.register(Events)
-admin.site.register(Vendors)
+admin.site.register(Personnel)
+# admin.site.register(Vendors)

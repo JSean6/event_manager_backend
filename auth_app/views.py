@@ -16,19 +16,14 @@ from django.http import JsonResponse
 from rest_framework import status
 
 
-from .models import CustomUser, Events, Tickets, Vendors, Contacts
-from .serializers import (
-    CustomUserSerializer, UserRegisterSerializer, UserLoginSerializer, 
-    EventsSerializer, TicketsSerializer, VendorsSerializer, ContactsSerializer, PasswordResetSerializer
-)
+from .models import *
+from .serializers import *
 from .permissions import IsAdminUser, IsStaffUser
 from .validations import custom_validation
 
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import TicketTransaction
-from .serializers import TicketTransactionSerializer
 from django.core.mail import send_mail
 from django.conf import settings
 
@@ -155,48 +150,26 @@ def password_reset_confirm(request, uidb64, token):
         messages.error(request, 'The password reset link is invalid or has expired.')
         return redirect('password_reset')  
 
-class EventsListCreateView(generics.ListCreateAPIView):
-    queryset = Events.objects.all()
-    serializer_class = EventsSerializer
+class PersonnelListCreateView(generics.ListCreateAPIView):
+    queryset = Personnel.objects.all()
+    serializer_class = PersonnelSerializer
     permission_classes = [AllowAny]
 
-class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Events.objects.all()
-    serializer_class = EventsSerializer
+class PersonnelDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Personnel.objects.all()
+    serializer_class = PersonnelSerializer
     lookup_field = 'id'
     permission_classes = [IsAuthenticated]
 
-    def delete_event(request, event_id):
+    def delete_personnel(request, personnel_id):
         if request.method == 'DELETE':
             try:
-                event = Events.objects.get(id=event_id)
-                event.delete()
-                return JsonResponse({'message': 'Event deleted successfully'}, status=200)
-            except Events.DoesNotExist:
-                return JsonResponse({'error': 'Event not found'}, status=404)
+                personnel = Personnel.objects.get(id=personnel_id)
+                personnel.delete()
+                return JsonResponse({'message': 'Personnel deleted successfully'}, status=200)
+            except Personnel.DoesNotExist:
+                return JsonResponse({'error': 'Personnel not found'}, status=404)
         return JsonResponse({'error': 'Invalid request method'}, status=400)
-
-class TicketsListCreateView(generics.ListCreateAPIView):
-    queryset = Tickets.objects.all()
-    serializer_class = TicketsSerializer
-    permission_classes = [AllowAny]
-
-class TicketDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Tickets.objects.all()
-    serializer_class = TicketsSerializer
-    lookup_field = 'id'
-    permission_classes = [IsAuthenticated]
-
-class VendorsListCreateView(generics.ListCreateAPIView):
-    queryset = Vendors.objects.all()
-    serializer_class = VendorsSerializer
-    permission_classes = [AllowAny]
-
-class VendorDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Vendors.objects.all()
-    serializer_class = VendorsSerializer
-    lookup_field = 'id'
-    permission_classes = [IsAuthenticated]
 
 class ContactsListCreateView(generics.ListCreateAPIView):
     queryset = Contacts.objects.all()
@@ -209,10 +182,10 @@ class ContactDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
     permission_classes = [IsAuthenticated]
 
-class SaveTransactionView(generics.ListCreateAPIView):
-    queryset = TicketTransaction.objects.all()
-    serializer_class = TicketTransactionSerializer
-    permission_classes = [AllowAny]
+# class SaveTransactionView(generics.ListCreateAPIView):
+#     queryset = TicketTransaction.objects.all()
+#     serializer_class = TicketTransactionSerializer
+#     permission_classes = [AllowAny]
 
 
 from django.core.mail import send_mail
@@ -221,27 +194,27 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-@csrf_exempt
-def send_receipt_email(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        email = data.get('email')
-        receipt = data.get('receipt')
+# @csrf_exempt
+# def send_receipt_email(request):
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         email = data.get('email')
+#         receipt = data.get('receipt')
         
-        subject = 'Your Ticket Purchase Receipt'
-        message = (
-            f"Event Title: {receipt['title']}\n"
-            f"Category: {receipt['category']}\n"
-            f"Venue: {receipt['venue']}\n"
-            f"Duration: {receipt['duration']}\n"
-            f"Name: {receipt['name']}\n"
-            f"Email: {receipt['email']}\n"
-            f"Number of Tickets: {receipt['number_of_tickets']}\n"
-            f"Total Price: Ksh.{receipt['totalPrice']}\n"
-            f"Date: {receipt['date']}\n"
-        )
-        send_mail(subject, message, 'seannjoroge54@gmail.com', [email], fail_silently=False)
+#         subject = 'Your Ticket Purchase Receipt'
+#         message = (
+#             f"personnel Title: {receipt['title']}\n"
+#             f"Category: {receipt['category']}\n"
+#             f"Venue: {receipt['venue']}\n"
+#             f"Duration: {receipt['duration']}\n"
+#             f"Name: {receipt['name']}\n"
+#             f"Email: {receipt['email']}\n"
+#             f"Number of Tickets: {receipt['number_of_tickets']}\n"
+#             f"Total Price: Ksh.{receipt['totalPrice']}\n"
+#             f"Date: {receipt['date']}\n"
+#         )
+#         send_mail(subject, message, 'seannjoroge54@gmail.com', [email], fail_silently=False)
 
-        return JsonResponse({'status': 'success', 'message': 'Email sent successfully'})
-    return JsonResponse({'status': 'fail', 'message': 'Invalid request method'})
+#         return JsonResponse({'status': 'success', 'message': 'Email sent successfully'})
+#     return JsonResponse({'status': 'fail', 'message': 'Invalid request method'})
 

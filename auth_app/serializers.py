@@ -83,29 +83,13 @@ class PasswordResetSerializer(serializers.Serializer):
             email_template_name='registration/password_reset_email.html',
             request=request,
         )
-class EventsSerializer(serializers.ModelSerializer):
+        
+class PersonnelSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Events
-        fields = '__all__'
-
-class TicketsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tickets
-        fields = '__all__'
-
-class VendorsSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Vendors
+        model = Personnel
         fields = '__all__'
 class ContactsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contacts
         fields = '__all__'
-
-class TicketTransactionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TicketTransaction
-        fields = '__all__'
-
